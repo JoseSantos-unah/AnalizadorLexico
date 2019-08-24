@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void main()
+
+void main(int* argv, char** args)
 {
+    ++args;
 
     int c;
     FILE *file;
-    file = fopen("texto.txt", "r");
+    file = fopen(args[0], "r");
 
     if(file)
     {

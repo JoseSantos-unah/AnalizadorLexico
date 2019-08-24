@@ -1,0 +1,64 @@
+
+############################################
+########  			BNF   			########
+############################################
+
+##	José Eduardo Santos Madrid
+##  N° Cuenta: 20141010640
+
+
+
+<letter> 	::-		"a"|"b"|"c"|"d" | ... |"z"|"A"|"B"| ... |"Z" 
+
+<digit>		::-		1|2|3|4|5|6|7|8|9|0
+
+<number>	::-		<digit> | <digit><number>
+
+<variable>	::- 	<letter> | <letter><variable> 
+
+<bool>		::-		"true" | "false"
+
+<data_type> ::-		"int"|"float"|"double"|"void"|"char"|"long"|"return" 
+
+<aritmetic_operator>  ::-		"+" | "-" | "/" | "*"
+
+<unary_operator>	::-		"++" | "--" | "-"
+
+<logical_operator>	  ::-		"==" | "!=" | "<" | ">" | "<=" | ">=" | "&" | "|"
+
+<assignation_operator>		::-		"="
+
+<end_instruction>		::-		";"
+
+<logical_expresion>	  ::-		<variable> <logical_operator> <variable>
+
+<instruction>		::-		<data_type> <variable> <assignation_operator> <number> <end_instruction>     |
+							<data_type> <variable> <assignation_operator> <variable> <end_instruction>	 |
+							<variable> <end_instruction> | 
+							<variable> <unary_operator> <end_instruction> | 
+							<unary_operator> <variable> <end_instruction>
+
+<aritmetic_operation>		::-		<number> <aritmetic_operator> <number>
+
+<sentence>		::-		<if_sentence> | <while_sentence>
+
+<intruction_block>	  ::-		<instruction> | <instruction> <instruction_block> | <sentence> |
+								<instruction_block> <sentence>
+
+<if_sentence>	::-		"if""(" <logical_expresion> ")" "{" <instruction_block> "}"
+
+<while_sentence> ::-	"while" "(" <logical_expresion> ")" "{" <instruction_block> "}"
+
+<main_function>		::-		<data_type> "main" "(" ")" "{" <instruction_block> "}"
+
+
+
+
+
+
+
+
+
+
+
+
