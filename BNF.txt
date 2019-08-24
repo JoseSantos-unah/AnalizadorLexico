@@ -18,7 +18,7 @@
 
 <bool>		::-		"true" | "false"
 
-<data_type> ::-		"int"|"float"|"double"|"void"|"char"|"long"|"return" 
+<data_type> ::-		"int"|"float"|"double"|"void"|"char"|"long"|
 
 <aritmetic_operator>  ::-		"+" | "-" | "/" | "*"
 
@@ -34,13 +34,14 @@
 
 <instruction>		::-		<data_type> <variable> <assignation_operator> <number> <end_instruction>     |
 							<data_type> <variable> <assignation_operator> <variable> <end_instruction>	 |
+							<data_type> <variable> <logical_operator> <variable> <end_instruction>	 |
 							<variable> <end_instruction> | 
 							<variable> <unary_operator> <end_instruction> | 
 							<unary_operator> <variable> <end_instruction>
 
 <aritmetic_operation>		::-		<number> <aritmetic_operator> <number>
 
-<sentence>		::-		<if_sentence> | <while_sentence>
+<sentence>		::-		<if_sentence> | <while_sentence> | <return_sentence> 
 
 <intruction_block>	  ::-		<instruction> | <instruction> <instruction_block> | <sentence> |
 								<instruction_block> <sentence>
@@ -49,16 +50,8 @@
 
 <while_sentence> ::-	"while" "(" <logical_expresion> ")" "{" <instruction_block> "}"
 
+<return_sentence>	::- 	"return" <end_instruction> | "return" <variable> <end_instruction> |
+							"return" <instruction> <end_instruction>
+
 <main_function>		::-		<data_type> "main" "(" ")" "{" <instruction_block> "}"
-
-
-
-
-
-
-
-
-
-
-
 
