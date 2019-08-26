@@ -21,11 +21,12 @@ const char* logical_operator[LOGICAL_OPERATORS] =
 { "<", ">", ">=", "<=", "==", "!=" };
 
 
-typedef enum
+typedef enum 
 {
     tkn_identifier,
-    tkn_integer_literal,
-    tkn_string_literal
+    tkn_digit_literal,
+    tkn_string_literal,
+    tkn_expresion
 }Token;
 
 typedef enum
@@ -49,13 +50,15 @@ void main(int* argv, char** args)
     printf("%i\n", argv);
     printf("%s\n", fName);
 
-    if (argv > 1)
-    {
-        Lexer(fName);
-    }else
-    {
-        printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");
-    }
+    //if (argv > 1)
+    //{
+    //    Lexer(fName);
+    //}else
+    //{
+    //    printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");
+    //}
+
+
     
 }
 
@@ -81,20 +84,63 @@ Token FiniteStateMachine(FILE* file)
     int character;
     State state = NONE;
 
+    //NONE,
+    //Variable,
+    //Digit,
+    //String,
+    //Data_type,
+    //Expresion
+
     while ( (character = getc(file)) != EOF)
     {
-        
-        switch (character)
+        if( (character >= 'a' && character <= 'z') && state == NONE  )
         {
-            case (' ') : continue;
-            case ('\n'): continue;
-            case ('a'|'b'|'c'|'d'|'e'|'f'|'g') : state = Variable; continue;
-            case ('1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'): state = Digit; continue;
-            case (';') : state = Expresion;  break;
-            default: break;
+            state = Data_type;
         }
-    
+
+        if( (character >= '0' && character <= '9') && state == NONE  )
+        {
+            state = Digit;
+        }
+
+        if( character == ' ' && state == Data_type)
+        {
+            return tkn_identifier;
+        }
+
+        if( character == ' ' && state == Digit)
+        {
+            return tkn_digit_literal;
+        }
+
+
     }
 
 
 }
+
+
+///switch (character)
+///{
+///    case (' ') :{ if (state == NONE) break; }
+///    case ('\n'):{ if (state == Variable) break; } 
+///
+///    case ('a'|'b'|'c'|'d'|'e'|'f'|'g') : { 
+///        if (state == NONE) {state = Variable; break;} 
+///    }
+///
+///    case ('a'|'b'|'c'|'d'|'e'|'f'|'g') : { 
+///        if (state == Variable) break; 
+///    }
+///
+///    case ('1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'): { 
+///        if (state == Digit) break;
+///    }
+///
+///    case (';') : {
+///        state = Expresion;
+///        return tkn_expresion;
+///    } 
+///    
+///    default: break;
+///}
