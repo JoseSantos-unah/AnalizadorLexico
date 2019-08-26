@@ -32,9 +32,10 @@ typedef enum
 {
     NONE,
     Variable,
-    Number,
+    Digit,
     String,
-    Data_type
+    Data_type,
+    Expresion
 }State;
 
 
@@ -78,20 +79,21 @@ void Lexer(const char* fName)
 Token FiniteStateMachine(FILE* file)
 {
     int character;
+    State state = NONE;
 
     while ( (character = getc(file)) != EOF)
     {
-        State state = NONE;
         
         switch (character)
         {
-            case ' ' : break;
-            case '\n': return tkn_string_literal;
-            case ('a'|'b'|'c'|'d'| 'z') : {state = Variable;} break;
-            
-            case (';') : break;
+            case (' ') : continue;
+            case ('\n'): continue;
+            case ('a'|'b'|'c'|'d'|'e'|'f'|'g') : state = Variable; continue;
+            case ('1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'): state = Digit; continue;
+            case (';') : state = Expresion;  break;
             default: break;
         }
+    
     }
 
 
