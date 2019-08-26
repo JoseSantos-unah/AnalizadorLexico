@@ -1,89 +1,98 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-const char* data_type[] = 
+#define DATA_TYPE 6
+#define ARITMETIC_OPERATIONS 4
+#define UNARY_OPERATORS 4
+#define LOGICAL_OPERATORS 6
+
+const char* data_type[DATA_TYPE] = 
 {"int", "float", "double", "void", "char", "long"}; 
 
-const char* aritmetic_operators[] = 
+const char* aritmetic_operators[ARITMETIC_OPERATIONS] = 
 { "+", "*", "-", "/" };
 
-const char* unary_operators[] = 
-{ "--", "++", "-"};
+const char* unary_operators[UNARY_OPERATORS] = 
+{ "--", "++", "-", "="};
 
-const char* logical_operator[] =
+const char* logical_operator[LOGICAL_OPERATORS] =
 { "<", ">", ">=", "<=", "==", "!=" };
 
-char assign = '=';
 
 typedef enum
 {
     tkn_identifier,
     tkn_integer_literal,
     tkn_string_literal
-}Tokens;
+}Token;
 
 typedef enum
 {
+    NONE,
     Variable,
     Number,
     String,
-    Reserved
-}States;
+    Data_type
+}State;
 
 
-Tokens getToken(const char letter);
+void Lexer(const char* fName);
+Token FiniteStateMachine(FILE* file);
 
 void main(int* argv, char** args)
 {
-    ++args;
+    const char* fName = args[1];
 
-    char * buffer = 0;
-    long length;
-    FILE * file = fopen (args[0], "r");
+    printf("%i\n", argv);
+    printf("%s\n", fName);
 
-    if (file)
+    if (argv > 1)
     {
-        fseek (file, 0, SEEK_END);
-        length = ftell (file);
-        fseek (file, 0, SEEK_SET);
-
-        buffer = malloc (length);
-
-        if (buffer)
-        {
-            fread (buffer, 1, length, file);
-        }
-
-        fclose (file);
-    }
-
-    if (buffer)
+        Lexer(fName);
+    }else
     {
-        printf("%s\n", buffer);
+        printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");
     }
+    
 }
 
 
-Tokens getToken(const char letter)
+void Lexer(const char* fName)
 {
-
-    States state;
-
-    switch (letter)
+    FILE * file = fopen (fName, "r"); /*Lectura de el archivo */
+    
+    if (file) //Si el archivo Existe...
     {
-        case '\n' | ' ' : ;
+        FiniteStateMachine(file); 
 
-        case 'a'|'b'|'c': state = Variable;
+        fclose(file);
+    }else
+    {
+        printf("El archivo ingresado NO EXISTE.\n");
+    }
+    
+}
 
-        case '1'|'2'|'3': state = Number; 
+Token FiniteStateMachine(FILE* file)
+{
+    int character;
 
-        case ' ' : break;
-
-        default:
-            break;
-   }
-
+    while ( (character = getc(file)) != EOF)
+    {
+        State state = NONE;
+        
+        switch (character)
+        {
+            case ' ' : break;
+            case '\n': return tkn_string_literal;
+            case ('a'|'b'|'c'|'d'| 'z') : {state = Variable;} break;
+            
+            case (';') : break;
+            default: break;
+        }
+    }
 
 
 }
