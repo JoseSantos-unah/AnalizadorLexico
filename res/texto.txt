@@ -1,7 +1,2 @@
-
-
-int variable = 89;
-
-float x = 10;
-
-char* string = "Cadena de texto";
+    
+    89765

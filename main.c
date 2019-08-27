@@ -1,10 +1,6 @@
 
 #include "Lexer.h"
-#include <string.h>
 
-
-void Lexer(const char* fName);
-void* FiniteStateMachine(FILE* file);
 
 void main(int* argv, char** args)
 {
@@ -13,24 +9,32 @@ void main(int* argv, char** args)
     printf("%i\n", argv);
     printf("%s\n", fName);
 
-    Word t ;
-    t.lexeme = "qiondas pue";
-    t.tag = ID;
 
-    Digit d;
-    d.tag = NUM;
-    d.value = 4;
+    //printf("%i\n", sizeof(Tag));
+    //printf("%i\n", sizeof(Digit));
+    //printf("%i\n", sizeof(char*));
 
-    printf(t.lexeme);
-
-    //if (argv > 1)
-    //{
-    //    Lexer(fName);
-    //}else
-    //{
-    //    printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");
-    //}
-
+    if (argv > 1)
+    {
+        lexer (fName);
+    }else
+    {
+        printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");
+    }
     
+    //char* word = (char*)malloc(sizeof(char) * 100);
+    //char* access = word;
+//
+    //
+    //for (unsigned int i = 'a'; i <= 'z'; i++)
+    //{
+    //    *word = i;
+    //    ++word;
+    //    printf("%i\n", i);
+    //}
+//
+//
+    //printf(access);
+
 }
 
