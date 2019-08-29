@@ -63,7 +63,7 @@ typedef struct
 typedef struct 
 {
     Tag tag;
-    char* lexeme ;
+    char* lexeme;
 }Word;
 
 
@@ -110,9 +110,10 @@ void lexer(const char* fName)
     if (file) //Si el archivo Existe...
     {
         void* data ;
-        int tagData; 
-        //while (1)
-        //{
+        int tagData;
+
+        while (tagData != -1)
+        {
 
         switch ( tagData = *((int*) (scan(file))) )
         {
@@ -133,7 +134,7 @@ void lexer(const char* fName)
             default: break;
         }
 
-        //}
+        }
         
 
        fclose(file);
@@ -153,7 +154,7 @@ void* scan(FILE* file)
     {
         for ( ; ; peek = (char)getc(file) )
         {
-            if (peek == ' ' || peek == '\t') continue;
+            if (peek == ' ' || peek == '\t' || peek == '\n') continue;
             else break;
         }
         
@@ -170,20 +171,20 @@ void* scan(FILE* file)
             number->tag = NUM;
             number->value = value;
 
-            printf("%i", number->tag);
+            printf("%i\n", number->tag);
             return number;
         }
 
         
-        if( isLetter(peek) )
+        if( isLetter(peek) || peek == ';' )
         {
             char* word = (char*)malloc(sizeof(char) * 100);
             char* access = word;
 
             do{
-                peek = getc(file);
                 *word = peek;
-                ++word;
+                word++;
+                peek = getc(file);
             }while( isLetterOrDigit(peek) );
 
             Word* real = (Word*)malloc(sizeof(Word));
