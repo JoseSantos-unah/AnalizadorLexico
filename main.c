@@ -16,7 +16,7 @@ void main(int* argv, char** args)
 
     if (argv > 1)
     {
-        lexer (fName);
+        Begin_Lexer(fName);
     }else
     {
         printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");

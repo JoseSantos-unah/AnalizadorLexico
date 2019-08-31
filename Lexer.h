@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "queue.h"
 
 #define DATA_TYPE 6
 #define ARITMETIC_OPERATIONS 4
@@ -27,7 +27,7 @@ int isDigit(int c);
 int isLetterOrDigit(int c);
 
 void lexer(const char* fName);
-void* scan(FILE* file);
+void* scan(FILE* file, struct Queue* q);
 
 
 typedef enum 
@@ -43,8 +43,10 @@ typedef enum
     FALSE = 259, 
     INT = 260, 
     FLOAT = 261, 
-    END_INSTRUCTION = 262,
-    NONE = 263  
+    CHAR = 262,
+    SHORT = 263,
+    OPERATOR = 264,
+    NONE = 265
     
 }Tag; // Tambien se pueden llamar "states"
 
@@ -63,7 +65,7 @@ typedef struct
 typedef struct 
 {
     Tag tag;
-    char* lexeme;
+    const char* lexeme;
 }Word;
 
 
@@ -95,7 +97,7 @@ int isDigit(int c)
 int isLetterOrDigit(int c)
 {
 
-    if(isLetter(c) || isDigit(c))
+    if( isLetter(c) || isDigit(c) )
     {
         return  1;
     }
@@ -103,41 +105,82 @@ int isLetterOrDigit(int c)
 }
 
 
-void lexer(const char* fName)
+void Begin_Lexer(const char* fName)
 {
     FILE * file = fopen (fName, "r"); /*Lectura de el archivo */
     
     if (file) //Si el archivo Existe...
     {
-        void* data ;
+        void* fullData ;
         int tagData;
 
-        while (tagData != -1)
+        struct Queue* m_Queue = queueConstructor();         
+
+        reserveWord(m_Queue, "int", INT);
+        reserveWord(m_Queue, "char", CHAR);
+        reserveWord(m_Queue, "short", SHORT);
+        reserveWord(m_Queue, "float", FLOAT);
+
+        reserveWord(m_Queue, "+", OPERATOR);
+        reserveWord(m_Queue, "-", OPERATOR);
+        reserveWord(m_Queue, "*", OPERATOR);
+        reserveWord(m_Queue, "/", OPERATOR);
+        reserveWord(m_Queue, "++", OPERATOR);
+        reserveWord(m_Queue, "--", OPERATOR);
+        reserveWord(m_Queue, "+=", OPERATOR);
+        reserveWord(m_Queue, "-=", OPERATOR);
+
+        while (tagData != EOF) // Mientras que no sea el fin del archivo
         {
 
-        switch ( tagData = *((int*) (scan(file))) )
+        switch ( tagData = *(int*)( fullData =  (scan(file, m_Queue)) ) )
         {
             case NUM: {
-                //printf(" Se leyó un Digito con valor %s ", ((Digit*)(data))->value  );
-                printf("Es un Numero!\n");
-                //free(data);
+                printf(" Se leyó un Digito con valor %u ", ((Digit*)(fullData))->value );
+                //printf("Es un Numero!\n");
+                //free(tagData);
                 break;
             }
 
             case ID:{
-               // printf(" Se leyó una variable con valor %s \n", ((Word*)(data))->lexeme   );
-                printf("Es un ID!\n");
-                ///free(data);
+                printf(" Se leyó una variable con valor %s \n", ((Word*)(fullData))->lexeme );
+                //printf("Es un ID!\n");
+                ///free(tagData);
                 break;
             }
-            
+
+            //ID = 257, 
+            //TRUE = 258, 
+            //FALSE = 259, 
+            //INT = 260, 
+            //FLOAT = 261, 
+            //END_INSTRUCTION = 262,
+            //RESERVED_WORD = 263,
+            //OPERATOR = 264,
+            //NONE = 265
+
+            case FLOAT: {
+                printf("Se encontro la palabra reservada %s!!\n", ((Word*)(fullData))->lexeme);
+            }
+
+            case OPERATOR: {
+                printf("Se encontro un operador %s!!\n", ((Word*)(fullData))->lexeme );
+            }
+
+            case INT : {
+                printf("Se encontro palabra reservada %s!!\n", ((Word*)(fullData))->lexeme );
+            }
+
             default: break;
         }
 
         }
         
-
-       fclose(file);
+        free(m_Queue);
+        fclose(file);
+        free(fullData);
+        free(file);
+        
     }else
     {
         printf("El archivo ingresado NO EXISTE.\n");
@@ -146,7 +189,7 @@ void lexer(const char* fName)
     
 }
 
-void* scan(FILE* file)
+void* scan(FILE* file, struct Queue* q)
 {
     int peek;
 
@@ -158,7 +201,6 @@ void* scan(FILE* file)
             else break;
         }
         
-        
         if (isDigit(peek))
         {
             int value = 0;
@@ -166,30 +208,52 @@ void* scan(FILE* file)
             do{
                 peek = getc(file);
             } while ( isDigit(peek) );
+
+            if ( isLetter(peek) )
+            {
+                continue;
+            }
             
             Digit* number = (Digit*)malloc(sizeof(Digit));
             number->tag = NUM;
             number->value = value;
 
-            printf("%i\n", number->tag);
+            //printf("%i\n", number->tag);
             return number;
         }
 
         
         if( isLetter(peek) || peek == ';' )
         {
-            char* word = (char*)malloc(sizeof(char) * 100);
-            char* access = word;
+            //Apartando memoria para 100 char's
+            char* wordPointer = (char*)malloc(sizeof(char) * 100); 
+            const char* access = wordPointer;
 
             do{
-                *word = peek;
-                word++;
+               *wordPointer = peek;
+                wordPointer++;
                 peek = getc(file);
             }while( isLetterOrDigit(peek) );
+            
+            struct Node* n = getFromQueue(q, access);
+            Word* real = (Word*) malloc( sizeof(Word) );
 
-            Word* real = (Word*)malloc(sizeof(Word));
+            real->lexeme = n->name;
+            real->tag = n->Tag;
+
+            printf("%s\n", getFromQueue(q, access)->name);
+            
+            if( n->name != " " )
+            {
+                return real;
+            }
+
             real->lexeme = access;
             real->tag = ID;
+            
+            reserveWord(q, access, ID);
+
+            //printf("%s\n", getFromQueue(q, access)->name);
 
             printf("%s\n", access);
             return real;
