@@ -1,2 +1,8 @@
-    
-    usd34j 78889 float char + - -- ++ int
+int usd34j 78889 access access float kiu char + - * / false true true  
+
+#version 330 core
+
+void main()
+{
+    int i = 0;
+}

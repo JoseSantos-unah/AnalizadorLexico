@@ -1,6 +1,6 @@
 
 #include "Lexer.h"
-
+#include <string.h>
 
 void main(int* argv, char** args)
 {
@@ -9,11 +9,6 @@ void main(int* argv, char** args)
     printf("%i\n", argv);
     printf("%s\n", fName);
 
-
-    //printf("%i\n", sizeof(Tag));
-    //printf("%i\n", sizeof(Digit));
-    //printf("%i\n", sizeof(char*));
-
     if (argv > 1)
     {
         Begin_Lexer(fName);
@@ -21,20 +16,10 @@ void main(int* argv, char** args)
     {
         printf(" No ingreso el nombre del archivo a buscar!!\n Ingrese el nombre.\n ");
     }
-    
-    //char* word = (char*)malloc(sizeof(char) * 100);
-    //char* access = word;
+
+    //int i = compareStrings("float", "floor");
 //
-    //
-    //for (unsigned int i = 'a'; i <= 'z'; i++)
-    //{
-    //    *word = i;
-    //    ++word;
-    //    printf("%i\n", i);
-    //}
-//
-//
-    //printf(access);
+    //printf("%i\n", i);
 
 }
 

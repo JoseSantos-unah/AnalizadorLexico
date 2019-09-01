@@ -1,73 +1,18 @@
 
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "queue.h"
 
-#define DATA_TYPE 6
-#define ARITMETIC_OPERATIONS 4
-#define UNARY_OPERATORS 4
-#define LOGICAL_OPERATORS 6
-
-
-const char* data_type[DATA_TYPE] = 
-{"int", "float", "double", "void", "char", "long"}; 
-
-const char* aritmetic_operators[ARITMETIC_OPERATIONS] = 
-{ "+", "*", "-", "/" };
-
-const char* unary_operators[UNARY_OPERATORS] = 
-{ "--", "++", "-", "="};
-
-const char* logical_operator[LOGICAL_OPERATORS] =
-{ "<", ">", ">=", "<=", "==", "!=" };
 
 int isLetter(int c);
 int isDigit(int c);
 int isLetterOrDigit(int c);
+int isOperator(int c);
 
-void lexer(const char* fName);
+void Begin_Lexer(const char* fName);
 void* scan(FILE* file, struct Queue* q);
-
-
-typedef enum 
-{
-    /**
-     * Debido a que un char toma valores [0-255] 
-     * Se inicia el enum en 256 para evitar algun conflicto.
-    */
-
-    NUM = 256, 
-    ID = 257, 
-    TRUE = 258, 
-    FALSE = 259, 
-    INT = 260, 
-    FLOAT = 261, 
-    CHAR = 262,
-    SHORT = 263,
-    OPERATOR = 264,
-    NONE = 265
-    
-}Tag; // Tambien se pueden llamar "states"
-
-typedef struct
-{
-    Tag tag;
-}GenericTag;
-
-
-typedef struct 
-{
-    Tag tag;
-    int value;
-}Digit;
-
-typedef struct 
-{
-    Tag tag;
-    const char* lexeme;
-}Word;
-
 
 int isLetter(int c)
 {
@@ -79,8 +24,8 @@ int isLetter(int c)
     {
         return 0;
     }
-    
 } 
+
 
 int isDigit(int c)
 {
@@ -100,8 +45,24 @@ int isLetterOrDigit(int c)
     if( isLetter(c) || isDigit(c) )
     {
         return  1;
+    }else
+    {
+        return 0;
     }
+    
 
+}
+
+int isOperator(int c)
+{
+    if(c == '+' || c == '-' || c == '*' || c == '/' || c == '=')
+    {
+        return 1;
+    }else
+    {
+        return 0;
+    }
+    
 }
 
 
@@ -111,76 +72,77 @@ void Begin_Lexer(const char* fName)
     
     if (file) //Si el archivo Existe...
     {
-        void* fullData ;
+        void* fullData;
         int tagData;
 
         struct Queue* m_Queue = queueConstructor();         
 
-        reserveWord(m_Queue, "int", INT);
-        reserveWord(m_Queue, "char", CHAR);
-        reserveWord(m_Queue, "short", SHORT);
-        reserveWord(m_Queue, "float", FLOAT);
+        reserveWord(m_Queue, "int",   RESERVED_WORD);
+        reserveWord(m_Queue, "char",  RESERVED_WORD);
+        reserveWord(m_Queue, "float", RESERVED_WORD);
 
-        reserveWord(m_Queue, "+", OPERATOR);
-        reserveWord(m_Queue, "-", OPERATOR);
-        reserveWord(m_Queue, "*", OPERATOR);
-        reserveWord(m_Queue, "/", OPERATOR);
+        reserveWord(m_Queue, "+",  OPERATOR);
+        reserveWord(m_Queue, "-",  OPERATOR);
+        reserveWord(m_Queue, "*",  OPERATOR);
+        reserveWord(m_Queue, "/",  OPERATOR);
         reserveWord(m_Queue, "++", OPERATOR);
         reserveWord(m_Queue, "--", OPERATOR);
         reserveWord(m_Queue, "+=", OPERATOR);
         reserveWord(m_Queue, "-=", OPERATOR);
+        reserveWord(m_Queue, "=",  OPERATOR);
+        reserveWord(m_Queue, "!=", OPERATOR);
 
-        while (tagData != EOF) // Mientras que no sea el fin del archivo
+        reserveWord(m_Queue, "true", TRUE);
+        reserveWord(m_Queue, "false", FALSE);
+
+
+        while ( (int*)fullData != EOF ) // Mientras que no sea el fin del archivo
         {
 
-        switch ( tagData = *(int*)( fullData =  (scan(file, m_Queue)) ) )
+        switch ( tagData = *(int*)(fullData =  scan(file, m_Queue)) )
         {
             case NUM: {
-                printf(" Se leyó un Digito con valor %u ", ((Digit*)(fullData))->value );
-                //printf("Es un Numero!\n");
-                //free(tagData);
+                printf("Se leyó un Digito con valor \"%u\" !! \n", ((Digit*)(fullData))->value );
                 break;
             }
 
             case ID:{
-                printf(" Se leyó una variable con valor %s \n", ((Word*)(fullData))->lexeme );
-                //printf("Es un ID!\n");
-                ///free(tagData);
+                printf("Se leyó una variable con valor \"%s\" \n", ((Word*)(fullData))->lexeme );
                 break;
             }
 
-            //ID = 257, 
-            //TRUE = 258, 
-            //FALSE = 259, 
-            //INT = 260, 
-            //FLOAT = 261, 
-            //END_INSTRUCTION = 262,
-            //RESERVED_WORD = 263,
-            //OPERATOR = 264,
-            //NONE = 265
-
-            case FLOAT: {
-                printf("Se encontro la palabra reservada %s!!\n", ((Word*)(fullData))->lexeme);
+            case RESERVED_WORD : {
+                printf("Se encontro la palabra reservada \"%s\" !!\n", ((Word*)(fullData))->lexeme);
+                break;
             }
 
             case OPERATOR: {
-                printf("Se encontro un operador %s!!\n", ((Word*)(fullData))->lexeme );
+                printf("Se encontro un operador \"%s\" !!\n", ((Word*)(fullData))->lexeme );
+                break;
             }
 
-            case INT : {
-                printf("Se encontro palabra reservada %s!!\n", ((Word*)(fullData))->lexeme );
+            case TRUE: {
+                printf("Se encontro la palabra reservada \"%s\" !!\n", ((Word*)(fullData))->lexeme );
+                break;
             }
 
-            default: break;
+            case FALSE: {
+                printf("Se encontro la palabra reservada \"%s\" !!\n", ((Word*)(fullData))->lexeme );
+                break;
+            }
+            
+            default:  break;
+        }
+            //printf("%u\n", m_Queue->size);
         }
 
-        }
-        
-        free(m_Queue);
-        fclose(file);
-        free(fullData);
-        free(file);
-        
+        // printQueue(m_Queue);
+        // destroyQueue(m_Queue);
+// 
+        // fclose(file);
+        // free(fullData);
+
+        return;
     }else
     {
         printf("El archivo ingresado NO EXISTE.\n");
@@ -203,6 +165,7 @@ void* scan(FILE* file, struct Queue* q)
         
         if (isDigit(peek))
         {
+            //TODO: falta arreglar el valot correcto
             int value = 0;
 
             do{
@@ -211,23 +174,24 @@ void* scan(FILE* file, struct Queue* q)
 
             if ( isLetter(peek) )
             {
-                continue;
+                // Si comienza leyendo digitos y encuentra un caracter entonces sale
+                // de la función usado "continue" y pasa a la lectura con caracteres.
+                continue; 
             }
             
             Digit* number = (Digit*)malloc(sizeof(Digit));
             number->tag = NUM;
             number->value = value;
 
-            //printf("%i\n", number->tag);
             return number;
         }
 
         
-        if( isLetter(peek) || peek == ';' )
+        if( isLetter(peek) || isOperator(peek))
         {
             //Apartando memoria para 100 char's
-            char* wordPointer = (char*)malloc(sizeof(char) * 100); 
-            const char* access = wordPointer;
+            char* access = (char*)malloc(sizeof(char) * 100);
+            char* wordPointer = access; 
 
             do{
                *wordPointer = peek;
@@ -238,24 +202,19 @@ void* scan(FILE* file, struct Queue* q)
             struct Node* n = getFromQueue(q, access);
             Word* real = (Word*) malloc( sizeof(Word) );
 
-            real->lexeme = n->name;
-            real->tag = n->Tag;
-
-            printf("%s\n", getFromQueue(q, access)->name);
-            
-            if( n->name != " " )
+            if( n != null_node_ptr )
             {
+                real->lexeme = n->name;
+                real->tag = n->Tag;
+                printf("\t\"%s\" fue encontrado en el Queue\n", n->name);
                 return real;
             }
+        
+            reserveWord(q, access, ID);
 
             real->lexeme = access;
             real->tag = ID;
-            
-            reserveWord(q, access, ID);
 
-            //printf("%s\n", getFromQueue(q, access)->name);
-
-            printf("%s\n", access);
             return real;
         }
 
@@ -267,5 +226,7 @@ void* scan(FILE* file, struct Queue* q)
         return token;
     }
 
+    /// Capturar caso de EOF
 
+    return EOF;
 }
