@@ -116,8 +116,6 @@ void destroyQueue(struct Queue* q)
         free((void*) control);
     }
 
-    free((void*) control);
-
     free((void*) clone);
     free((void*)q);
 
@@ -151,7 +149,6 @@ int compareStrings(const char* s1, const char* s2)
         {
             if (*s1p == *s2p)
             {
-                //printf("bien\n");
                 count++;
             }else
             {

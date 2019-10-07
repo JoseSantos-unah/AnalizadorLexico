@@ -62,7 +62,6 @@ int isOperator(int c)
     {
         return 0;
     }
-    
 }
 
 
@@ -74,6 +73,7 @@ void Begin_Lexer(const char* fName)
     {
         void* fullData;
         int tagData;
+        int isFinished = 0;
 
         struct Queue* m_Queue = queueConstructor();         
 
@@ -96,7 +96,7 @@ void Begin_Lexer(const char* fName)
         reserveWord(m_Queue, "false", FALSE);
 
 
-        while ( (int*)fullData != EOF ) // Mientras que no sea el fin del archivo
+        while ( isFinished == 0 ) // Mientras que no sea el fin del archivo
         {
 
         switch ( tagData = *(int*)(fullData =  scan(file, m_Queue)) )
@@ -130,12 +130,18 @@ void Begin_Lexer(const char* fName)
                 printf("Se encontro la palabra reservada \"%s\" !!\n", ((Word*)(fullData))->lexeme );
                 break;
             }
-            
-            default:  break;
+
+            case EOF: {
+                printf("Eod Of File \n ");
+                isFinished = 1;
+                break;
+            }
+                
+            default: break;
         }
             //printf("%u\n", m_Queue->size);
         }
-
+        
         // printQueue(m_Queue);
         // destroyQueue(m_Queue);
 // 
@@ -165,7 +171,7 @@ void* scan(FILE* file, struct Queue* q)
         
         if (isDigit(peek))
         {
-            //TODO: falta arreglar el valot correcto
+            //TODO: falta arreglar el valor correcto
             int value = 0;
 
             do{
@@ -228,5 +234,5 @@ void* scan(FILE* file, struct Queue* q)
 
     /// Capturar caso de EOF
 
-    return EOF;
+    return peek;
 }

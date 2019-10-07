@@ -18,11 +18,16 @@ typedef enum
     
 }Tag; // Tambien se pueden llamar "states"
 
+
+/*
+    Estos son los diferentes tipos de Tokens que son regresados por el Lexer
+    Como en "C" no hay POO entonces deben ser estructuras por separado.
+*/
+
 typedef struct
 {
     Tag tag;
 }GenericTag;
-
 
 typedef struct 
 {
